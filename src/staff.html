@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <title>人员管理</title>
+  {{> './tpls/head.html'}}
+</head>
+<body style="display: none;">
+			<div class="page-container" id="vueApp">
+				<el-container>
+					<el-main>
+						<el-row>
+							<el-col :span="24" class="content-inner">
+								<el-form :inline="true" label-width="60px" v-model="form">
+									<el-form-item label="查询：">
+										<el-input v-model="form.input" placeholder="请输入查询内容"></el-input>
+									</el-form-item>
+									<el-form-item>
+										<el-button type="primary" @click="onQuery">查询</el-button>
+									</el-form-item>
+									<el-form-item>
+										<el-button type="primary" @click="onAdd">新增</el-button>
+									</el-form-item>
+									<el-form-item>
+										<el-button type="primary" @click="onEdit">修改</el-button>
+									</el-form-item>
+									<el-form-item>
+										<el-button type="primary" @click="onDelete">删除</el-button>
+									</el-form-item>
+									<el-form-item>
+										<el-button type="primary">重置密码</el-button>
+									</el-form-item>
+								</el-form>
+								<el-table :data="tableData" border style="width: 100%" @selection-change="handleSelectionChange">
+									<el-table-column type="selection" width="55">
+									</el-table-column>
+									<el-table-column type="index" label="#" width="50">
+									</el-table-column>
+									<el-table-column prop="userNum" label="员工编号">
+									</el-table-column>
+									<el-table-column prop="userName" label="姓名">
+									</el-table-column>
+									<el-table-column prop="account" label="登录帐号">
+									</el-table-column>
+									<el-table-column prop="deptName" label="部门">
+									</el-table-column>
+									<el-table-column prop="positionName" label="岗位">
+									</el-table-column>
+									<el-table-column prop="tel" label="手机">
+									</el-table-column>
+									<el-table-column label="性别">
+										<template slot-scope="scope">
+											<!-- <el-checkbox v-model="scope.row.sex"></el-checkbox> -->
+											${scope.row.sex==1?'男':'女'}
+										</template>
+									</el-table-column>
+									<el-table-column label="年龄">
+									</el-table-column>
+									<el-table-column label="工龄">
+									</el-table-column>
+									<el-table-column label="在职">
+										<template slot-scope="scope">
+											<el-checkbox v-model="scope.row.isactive" :disabled="true"></el-checkbox>
+										</template>
+									</el-table-column>
+									<el-table-column label="允许登录">
+										<template slot-scope="scope">
+											<el-checkbox v-model="scope.row.islogin" :disabled="true"></el-checkbox>
+										</template>
+									</el-table-column>
+									<el-table-column label="顶级部门名称">
+									</el-table-column>
+								</el-table>
+								<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+									:current-page="currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="pageSize"
+									layout="total, sizes, prev, pager, next, jumper" :total="total">
+								</el-pagination>
+							</el-col>
+						</el-row>
+					</el-main>
+				</el-container>
+				<el-dialog fullscreen="true" :title="dialog.title" :visible.sync="dialog.visible">
+					<div class="box-content">
+						<p class="bc-title">基本信息</p>
+						<el-form class="pt15" :inline="true" label-width="80px">
+								<el-form-item label="员工编号">
+									<el-input v-model="dialog.form.userNum" placeholder="员工编号"></el-input>
+								</el-form-item>
+								<el-form-item label="姓名">
+									<el-input v-model="dialog.form.userName" placeholder="姓名"></el-input>
+								</el-form-item>
+								<el-form-item label="登录类型">
+									<el-input v-model="dialog.form.loginStyle" placeholder="登录类型"></el-input>
+								</el-form-item>
+								<el-form-item label="部门">
+									<el-input v-model="dialog.form.deptName" placeholder="部门"></el-input>
+								</el-form-item>
+								<el-form-item label="岗位">
+									<el-input v-model="dialog.form.positionName" placeholder="岗位"></el-input>
+								</el-form-item>
+								
+								<el-form-item label="权限">
+									<el-input v-model="dialog.form.rightassign" placeholder="权限"></el-input>
+								</el-form-item>
+								<el-form-item label="IP限制">
+									<el-input v-model="dialog.form.ipRightname" placeholder="IP限制"></el-input>
+								</el-form-item>
+								<el-form-item label="用户等级">
+									<el-input v-model="dialog.form.userGrade_desc" placeholder="用户等级"></el-input>
+								</el-form-item>
+						</el-form>
+						<el-form class="pt15" :inline="true" label-width="80px">
+							<el-form-item label="登录帐号">
+								<el-input v-model="dialog.form.account" placeholder="登录帐号"></el-input>
+							</el-form-item>
+							<el-form-item>
+								<el-checkbox v-model="dialog.form.isactive">是否在职</el-checkbox>
+								<el-checkbox v-model="dialog.form.islogin">允许登录</el-checkbox>
+								<el-checkbox v-model="dialog.form.isrtx">手机登录</el-checkbox>
+								<el-checkbox v-model="dialog.form.isInvisible">隐藏账号</el-checkbox>
+								<el-checkbox v-model="dialog.form.ischecklocal">定点登录</el-checkbox>
+							</el-form-item>
+						</el-form>
+					</div>
+					<div class="box-content">
+						<p class="bc-title">联络信息</p>
+						<el-form class="pt15" :inline="true" label-width="100px">
+							<el-form-item label="电话">
+								<el-input v-model="dialog.form.tel" placeholder="电话"></el-input>
+							</el-form-item>
+							<el-form-item label="传真">
+								<el-input v-model="dialog.form.fax" placeholder="传真"></el-input>
+							</el-form-item>
+							<el-form-item label="家里电话">
+								<el-input v-model="dialog.form.hometel" placeholder="家里电话"></el-input>
+							</el-form-item>
+							<el-form-item label="省">
+								<el-input v-model="dialog.form.provinceId" placeholder="省"></el-input>
+							</el-form-item>
+							<el-form-item label="市">
+								<el-input v-model="dialog.form.cityId" placeholder="市"></el-input>
+							</el-form-item>
+							<el-form-item label="邮编">
+								<el-input v-model="dialog.form.postcode" placeholder="邮编"></el-input>
+							</el-form-item>
+							<el-form-item label="邮箱">
+								<el-input v-model="dialog.form.email" placeholder="邮箱"></el-input>
+							</el-form-item>
+						</el-form>
+					</div>
+					<div class="box-content">
+						<p class="bc-title">详细信息</p>
+						<el-form class="pt15" :inline="true" label-width="100px">
+								<el-form-item label="身份证">
+									<el-input v-model="dialog.form.idcard" placeholder="身份证"></el-input>
+								</el-form-item>
+								<el-form-item label="性别">
+									<el-radio v-model="dialog.form.sex" label="0">男</el-radio>
+									<el-radio v-model="dialog.form.sex" label="1">女</el-radio>
+								</el-form-item>
+								<el-form-item label="出生日期">
+									<el-input v-model="dialog.form.birthday" placeholder="出生日期"></el-input>
+								</el-form-item>
+								<el-form-item label="入职日期">
+									<el-input v-model="dialog.form.comdate" placeholder="入职日期"></el-input>
+								</el-form-item>
+								<el-form-item label="身高">
+									<el-input v-model="dialog.form.stature" placeholder="身高"></el-input>
+								</el-form-item>
+								<el-form-item label="民族">
+									<el-input v-model="dialog.form.nation" placeholder="民族"></el-input>
+								</el-form-item>
+								<el-form-item label="籍贯">
+									<el-input v-model="dialog.form.nativeplace" placeholder="籍贯"></el-input>
+								</el-form-item>
+								<el-form-item label="户口所在地">
+									<el-input v-model="dialog.form.registerplace" placeholder="户口所在地"></el-input>
+								</el-form-item>
+								<el-form-item label="学历">
+									<el-input v-model="dialog.form.education" placeholder="学历"></el-input>
+								</el-form-item>
+								<el-form-item label="专业">
+									<el-input v-model="dialog.form.speciality" placeholder="专业"></el-input>
+								</el-form-item>
+								<el-form-item label="毕业院校">
+									<el-input v-model="dialog.form.college" placeholder="毕业院校"></el-input>
+								</el-form-item>
+								<el-form-item label="毕业时间">
+									<el-input v-model="dialog.form.graduate" placeholder="毕业时间"></el-input>
+								</el-form-item>
+								<el-form-item label="技术职称">
+									<el-input v-model="dialog.form.title" placeholder="技术职称"></el-input>
+								</el-form-item>
+								<el-form-item label="政治面貌">
+									<el-input v-model="dialog.form.party" placeholder="政治面貌"></el-input>
+								</el-form-item>
+								<el-form-item label="外语一">
+									<el-input v-model="dialog.form.foreignlan1Id" placeholder="外语一"></el-input>
+								</el-form-item>
+								<el-form-item label="外语一等级">
+									<el-input v-model="dialog.form.foreignlan1level" placeholder="外语一等级"></el-input>
+								</el-form-item>
+								<el-form-item label="外语二">
+									<el-input v-model="dialog.form.foreignlan1Id" placeholder="外语二"></el-input>
+								</el-form-item>
+								<el-form-item label="外语二等级">
+									<el-input v-model="dialog.form.foreignlan2level" placeholder="外语二等级"></el-input>
+								</el-form-item>
+								<el-form-item label="年假">
+									<el-input v-model="dialog.form.yearleaves" placeholder="年假"></el-input>
+								</el-form-item>
+								<el-form-item label="短信条数/月">
+									<el-input v-model="dialog.form.smsMonthnum" placeholder="短信条数/月"></el-input>
+								</el-form-item>
+						</el-form>
+					</div>
+					<div slot="footer" class="dialog-footer">
+						<el-button @click="dialogFormVisible = false">取 消</el-button>
+						<el-button type="primary" @click="dialogFormVisible = false">保 存</el-button>
+					</div>
+				</el-dialog>
+				<Test></Test>
+			</div>
+  <!-- webpack js -->
+  {{#each htmlWebpackPlugin.files.js}}<script src="{{this}}"></script> {{/each}}
+  <!-- webpack js end-->
+</body>
+</html>

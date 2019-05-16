@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>单位管理</title>
+    {{> './tpls/head.html'}}
+    <link rel="stylesheet" href="plugins/ztree/css/zTreeStyle.css">
+	<script src="static/common.js"></script>
+	<script src="plugins/ztree/js/jquery.ztree.all-3.5.min.js"></script>
+	<script src="plugins/ztree/deptTree.js"></script>
+	<script src="plugins/ztree/searchTree.js"></script>
+	<script src="plugins/ztree/treerightmeun.js"></script>
+</head>
+<body style="display: none;">
+<div class="page-container" id="vueApp">
+    <el-container>
+        <el-main>
+            <el-row class="content-container">
+                <el-col :span="4" class="tree-container">
+                    <z-tree domId="deptTreeCommon" @zTreeOnClick="getDwData"></z-tree>
+                </el-col>
+                <el-col :span="20" class="content-inner">
+                    <el-row class="el-button-row">
+                        <el-button type="primary" @click="btnAdd">新增</el-button>
+                        <el-button type="primary" @click="btnUpdate">修改</el-button>
+                        <el-button type="primary" @click="btnDelete">删除</el-button>
+                    </el-row>
+                    <div class="border-top-container">
+                        <el-form :inline="true" :label-position="form.labelPosition" label-width="90px"
+                                 v-model="form" class="demo-form-inline">
+                            <el-form-item label="单位名称">
+                                <el-input v-model="form.name" placeholder="请输入单位名称"></el-input>
+                            </el-form-item>
+                            <el-form-item label="单位全宗号">
+                                <el-input v-model="form.dwnum" placeholder="请输入单位全宗号"></el-input>
+                            </el-form-item>
+                            <el-form-item label="单位全称">
+                                <el-input v-model="form.fullname" placeholder="请输入单位全称"></el-input>
+                            </el-form-item>
+                            <el-form-item label="编码">
+                                <el-input v-model="form.encode" placeholder="请输入编码"></el-input>
+                            </el-form-item>
+                            <el-form-item label="单位级别">
+                                <el-input v-model="form.grade" placeholder="请输入单位级别">
+                                    <i class="el-icon-plus" slot="suffix" @click="handleIconClick('单位级别','grade')"></i>
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item label="顺序号">
+                                <el-input v-model="form.fi_order" placeholder="请输入顺序号"></el-input>
+                            </el-form-item>
+                            <el-form-item label="单位属性">
+                                <el-input v-model="form.property" placeholder="请输入单位属性"></el-input>
+                            </el-form-item>
+                            <el-form-item label="单位类别">
+                                <el-input v-model="form.class" placeholder="请输入单位类别"></el-input>
+                            </el-form-item>
+                            <el-form-item label="单位负责人">
+                                <el-input v-model="form.emp_name" placeholder="请输入单位负责人">
+                                    <i class="el-icon-plus" slot="suffix" @click="handleIconClick('单位负责人','emp_name','emp_id')"></i>
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item label="单位地址">
+                                <el-input v-model="form.address" placeholder="请输入单位地址"></el-input>
+                            </el-form-item>
+                            <el-form-item label="联系电话">
+                                <el-input v-model="form.tel" placeholder="请输入联系电话"></el-input>
+                            </el-form-item>
+                            <el-form-item label="分级管理员">
+                                <el-input v-model="form.charge_name" placeholder="请输入分级管理员">
+                                    <i class="el-icon-plus" slot="suffix" @click="handleIconClick('分级管理员','charge_name','charge_id')"></i>
+                                </el-input>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
+    <add-people :visible="showAddPeople" @confirm="addPeopleConfirm" @cancel="addPeopleCancel" :title="addPeopleTitle">
+    </add-people>
+</div>
+
+<!-- webpack js -->
+{{#each htmlWebpackPlugin.files.js}}<script src="{{this}}"></script> {{/each}}
+<!-- webpack js end-->
+
+<script type="text/javascript">
+    // $("#deptTreeCommon").initDeptTree({
+    //     treeType: "dw_tree",
+    //     rootId: 1,
+    //     chkOrNot: false,
+    //     loadingSelector: "TreeLogindata",
+    //     onClick: getDwData,
+    //     onRightClick: zTreeononRightClick
+    // });
+
+    //右键菜单新增回调功能
+    function callbackTreeAdd(treeObj, treeNode){
+        vm.form.charge_name="";
+        vm.form.charge_id="";
+        vm.form.name="";
+        vm.form.grade="";
+        vm.form.parent_id="";
+        vm.form.fi_order="";
+        vm.form.address="";
+        vm.form.class="";
+        vm.form.dwnum="";
+        vm.form.encode="";
+        vm.form.fullname="";
+        vm.form.grade="";
+        vm.form.property="";
+        vm.form.tel="";
+
+        vm.form.id=treeNode.id;
+    }
+
+    //右键菜单删除回调功能
+    function callbackTreeDel(treeObj, treeNode){
+        vm.form.id=treeNode.id;
+        btnDelete();
+    }
+</script>
+</body>
+</html>

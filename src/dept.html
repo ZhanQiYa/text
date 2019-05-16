@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>部门设置</title>
+	{{> './tpls/head.html'}}
+	<link rel="stylesheet" href="plugins/ztree/css/zTreeStyle.css">
+	<script src="plugins/ztree/js/jquery.ztree.all-3.5.min.js"></script>
+	<script src="plugins/ztree/deptTree.js"></script>
+	<script src="plugins/ztree/searchTree.js"></script>
+	<script src="plugins/ztree/treerightmeun.js"></script>
+	<script src="static/common.js"></script>
+</head>
+<body style="display: none;">
+	<div class="page-container" id="vueApp">
+		<el-container>
+			<el-main>
+				<el-row class="content-container">
+					<el-col :span="4" class="tree-container">
+						<z-tree domId="deptTreeCommon"></z-tree>
+					</el-col>
+
+					<el-col :span="20" class="content-inner">
+						<el-row class="el-button-row">
+							<el-button type="primary" id="btnRefresh">刷新人员编号</el-button>
+							<el-button type="primary"  @click="btnInsert">新增</el-button>
+							<el-button type="primary" id="btnSave">保存</el-button>
+							<el-button type="primary" id="btnDelete">删除</el-button>
+						</el-row>
+                        <div class="border-top-container">
+                            <el-form :inline="true" :label-position="form.labelPosition" label-width="80px"
+                                     v-model="form" class="demo-form-inline">
+                                <el-form-item label="部门名称">
+                                    <el-input v-model="form.deptName" placeholder="请输入部门名称"></el-input>
+                                </el-form-item>
+                                <el-form-item label="部门代码">
+                                    <el-input v-model="form.deptNum" placeholder="请输入部门代码"></el-input>
+                                </el-form-item>
+                                <el-form-item label="部门编码">
+                                    <el-input v-model="form.encode" placeholder="请输入"></el-input>
+                                </el-form-item>
+                                <el-form-item label="单位名称">
+                                    <el-select v-model="dwList.model"  placeholder="请选择">
+                                        <el-option
+                                                v-for="item in dwList.options"
+                                                :value="item">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="行政编码">
+                                    <el-input v-model="form.orgCode" placeholder="请输入"></el-input>
+                                </el-form-item>
+                                <el-form-item label="顺序号">
+                                    <el-input v-model="form.fiOrder" placeholder="请输入"></el-input>
+                                </el-form-item>
+                                <el-form-item label="定编人数">
+                                    <el-input v-model="form.empnum" placeholder="请输入"></el-input>
+                                </el-form-item>
+                                <el-form-item label="主管岗位">
+                                    <el-select v-model="positionList.model"  placeholder="请选择">
+                                        <el-option
+                                                v-for="item in positionList.options"
+                                                :label="item.label"
+                                                :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="部门显示">
+                                    <el-checkbox v-model="form.isVisible">不显示</el-checkbox>
+                                </el-form-item>
+
+                            </el-form>
+                        </div>
+						<el-row class="el-button-row border-top border-bottom">
+							<el-button type="primary">新增</el-button>
+							<el-button type="primary">兼职</el-button>
+							<el-button type="primary" id="btnUserUpdate">修改</el-button>
+							<el-button type="primary">删除</el-button>
+						</el-row>
+						<el-table class="mt15" :data="tableData" border style="width: 100%">
+							<el-table-column type="selection" width="55">
+							</el-table-column>
+							<el-table-column type="index" label="#" width="50">
+							</el-table-column>
+							<el-table-column prop="userName" label="姓名">
+							</el-table-column>
+							<el-table-column prop="account" label="登录帐号">
+							</el-table-column>
+							<el-table-column prop="deptName" label="部门">
+							</el-table-column>
+							<el-table-column prop="positionName" label="岗位">
+							</el-table-column>
+							<el-table-column label="性别">
+								<template slot-scope="scope">
+                  <!-- <el-checkbox v-model="scope.row.sex"></el-checkbox> -->
+                  ${scope.row.sex==1?'男':'女'}
+								</template>
+							</el-table-column>
+							<el-table-column prop="tel" label="手机">
+							</el-table-column>
+						</el-table>
+					</el-col>
+				</el-row>
+			</el-main>
+		</el-container>
+	</div>
+<!-- <script src="../../js/modules/sys/dept.js"></script> -->
+<!-- webpack js -->
+{{#each htmlWebpackPlugin.files.js}}<script src="{{this}}"></script> {{/each}}
+<!-- webpack js end-->
+
+<!-- 
+<script type="text/javascript">
+	$("#deptTreeCommon").initDeptTree({
+		treeType : "dept_tree",//树类型：dept_tree 部门组织树  dw_tree 单位组织树
+		rootId : 21,
+		chkOrNot : false,
+		loadingSelector : "TreeLogindata",
+		onClick : zTreeOnClick,
+		onRightClick : zTreeononRightClick//如果要右键菜单功能此处必写
+	});
+
+	function zTreeOnClick(event, treeId, treeNode) {
+		//console.info(treeId);
+		//console.info(treeNode);
+	}
+
+
+
+	//右键菜单新增回调功能
+	function callbackTreeAdd(treeObj, treeNode){
+		var newNode = { name:"增加A"};
+		if (treeObj.getSelectedNodes()[0]) {
+			newNode.checked = treeObj.getSelectedNodes()[0].checked;
+			treeObj.addNodes(treeObj.getSelectedNodes()[0], newNode);
+		} else {
+			treeObj.addNodes(null, newNode);
+		}
+	}
+
+	//右键菜单删除回调功能
+	function callbackTreeDel(treeObj, treeNode){
+		if (treeNode && treeNode.length>0) {
+			if (treeNode[0].children && treeNode[0].children.length > 0) {
+				var msg = "要删除的节点是父节点，如果删除将连同子节点一起删掉。\n\n请确认！";
+				if (confirm(msg)==true){
+					treeObj.removeNode(treeNode[0]);
+				}
+			} else {
+				treeObj.removeNode(treeNode[0]);
+			}
+		}
+	}
+
+</script> -->
+</body>
+</html>

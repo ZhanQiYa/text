@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>单位管理</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" type="text/css" href="../../elememt/css/elememt.css" media="all">
+    <link rel="stylesheet" type="text/css" href="../../css/common.css">
+    <link rel="stylesheet" type="text/css" href="../../css/main.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+    <link rel="stylesheet" href="../../plugins/zTree/css/zTreeStyle.css">
+    <link rel="stylesheet" type="text/css" href="../../css/modules/dept.css" media="all">
+    <script src="../../elememt/js/vue.min.js"></script>
+    <script src="../../elememt/js/elememt.js"></script>
+
+    <script src="../../libs/jquery.min.js"></script>
+
+    <script src="../../plugins/layer/layer.js"></script>
+    <script src="../../plugins/treegrid/jquery.treegrid.min.js"></script>
+    <script src="../../plugins/treegrid/jquery.treegrid.bootstrap3.js"></script>
+    <script src="../../plugins/treegrid/jquery.treegrid.extension.js"></script>
+    <script src="../../plugins/treegrid/tree.table.js"></script>
+    <script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+    <script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+    <script src="../../js/util.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../plugins/zTree/js/jquery.ztree.all-3.5.min.js"></script>
+    <script src="../../js/modules/comm/searchTree.js"></script>
+
+</head>
+<body style="display: none;">
+<div class="page-container" id="dwApp">
+    <el-container>
+        <el-main>
+            <el-row class="content-container">
+                <el-col :span="4" class="tree-container">
+                    <div class="search-wrapper">
+                        <div class="search-input">
+                            <input type="text" placeholder="请输入搜索内容"/>
+                            <i class="icon-search btn-tree-search"></i>
+                        </div>
+                        <div class="search-list" style="display: none;">
+                            <ul></ul>
+                        </div>
+                    </div>
+                    <ul id="deptTreeCommon" class="ztree"></ul>
+                </el-col>
+                <el-col :span="20" class="content-inner">
+                    <el-row class="el-button-row">
+                        <el-button type="primary" @click="btnAdd()">新增</el-button>
+                        <el-button type="primary" @click="btnUpdate()">修改</el-button>
+                        <el-button type="primary" @click="btnDelete()">删除</el-button>
+                    </el-row>
+                    <div class="border-top-container">
+                        <el-form :inline="true" :label-position="form.labelPosition" label-width="90px"
+                                 v-model="form" class="demo-form-inline">
+                            <el-form-item label="单位名称">
+                                <el-input v-model="form.name" placeholder="请输入单位名称"></el-input>
+                            </el-form-item>
+                            <el-form-item label="单位全宗号">
+                                <el-input v-model="form.dwnum" placeholder="请输入单位全宗号"></el-input>
+                            </el-form-item>
+                            <el-form-item label="单位全称">
+                                <el-input v-model="form.fullname" placeholder="请输入单位全称"></el-input>
+                            </el-form-item>
+                            <el-form-item label="编码">
+                                <el-input v-model="form.encode" placeholder="请输入编码"></el-input>
+                            </el-form-item>
+                            <el-form-item label="单位级别">
+                                <el-input v-model="form.grade" placeholder="请输入单位级别">
+                                    <i class="el-icon-plus" slot="suffix" @click="handleIconClick('单位级别','grade')"></i>
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item label="顺序号">
+                                <el-input v-model="form.fi_order" placeholder="请输入顺序号"></el-input>
+                            </el-form-item>
+                            <el-form-item label="单位属性">
+                                <el-input v-model="form.property" placeholder="请输入单位属性"></el-input>
+                            </el-form-item>
+                            <el-form-item label="单位类别">
+                                <el-input v-model="form.class" placeholder="请输入单位类别"></el-input>
+                            </el-form-item>
+                            <el-form-item label="单位负责人">
+                                <el-input v-model="form.emp_name" placeholder="请输入单位负责人">
+                                    <i class="el-icon-plus" slot="suffix" @click="handleIconClick('单位负责人','emp_name','emp_id')"></i>
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item label="单位地址">
+                                <el-input v-model="form.address" placeholder="请输入单位地址"></el-input>
+                            </el-form-item>
+                            <el-form-item label="联系电话">
+                                <el-input v-model="form.tel" placeholder="请输入联系电话"></el-input>
+                            </el-form-item>
+                            <el-form-item label="分级管理员">
+                                <el-input v-model="form.charge_name" placeholder="请输入分级管理员">
+                                    <i class="el-icon-plus" slot="suffix" @click="handleIconClick('分级管理员','charge_name','charge_id')"></i>
+                                </el-input>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
+    <add-people :visible="showAddPeople" @confirm="addPeopleConfirm" @cancel="addPeopleCancel" :title="addPeopleTitle">
+
+    </add-people>
+</div>
+<script src="../../js/modules/sys/dept.js"></script>
+<script src="../../js/modules/comm/deptTree.js"></script>
+<script src="../../js/modules/comm/treerightmeun.js"></script>
+<script src="../../js/modules/comm/vueComponent.js"></script>
+<script type="text/javascript">
+    var emptyForm={
+        name: '',
+        region: '',
+        date1: '',
+        date2: '',
+        delivery: false,
+        type: [],
+        resource: '',
+        desc: '',
+        dwnum: '',//单位全宗号
+        fullname: '',//单位全称
+        encode: '',//编码
+        grade: '',//单位级别
+        fi_order: '',//序号
+        property: '',//单位属性
+        class: '',//单位类别
+        emp_name: '',//单位负责人
+        address: '',//单位地址
+        tel: '',//联系电话
+        charge_name: '',//分级管理员
+        id: '',
+        org_id: '',
+        parent_id: '',
+        charge_id: '',
+        emp_id: '',
+        right_id: ''
+    };
+    var vm = new Vue({
+        el: '#dwApp',
+        data: function () {
+            return {
+                form: emptyForm,
+                addPeopleTitle: '',
+                showAddPeople: false,
+                currentModel: '',
+                currentModelName:'',
+                currentModelId:''
+            }
+        },
+        computed: {},
+        methods: {
+            onSubmit: function () {
+                console.log('submit!');
+            },
+            handleIconClick: function(title,modelName,modelId){
+                this.currentModelName = modelName
+                this.currentModelId = modelId
+                this.addPeopleTitle = title + '选择弹框'
+                this.showAddPeople = true
+            },
+            addPeopleConfirm: function(data){
+                console.log(data)
+                this.form[this.currentModelName] = data.userName;
+                this.form[this.currentModelId] = data.userId;
+                this.showAddPeople = false
+            },
+            addPeopleCancel: function (data) {
+                this.showAddPeople = false
+            }
+        }
+    })
+
+</script>
+<script type="text/javascript">
+    $("#deptTreeCommon").initDeptTree({
+        treeType: "dw_tree",
+        rootId: 1,
+        chkOrNot: false,
+        loadingSelector: "TreeLogindata",
+        onClick: getDwData,
+        onRightClick: zTreeononRightClick
+    });
+
+    //右键菜单新增回调功能
+    function callbackTreeAdd(treeObj, treeNode){
+        vm.form.charge_name="";
+        vm.form.charge_id="";
+        vm.form.name="";
+        vm.form.grade="";
+        vm.form.parent_id="";
+        vm.form.fi_order="";
+        vm.form.address="";
+        vm.form.class="";
+        vm.form.dwnum="";
+        vm.form.encode="";
+        vm.form.fullname="";
+        vm.form.grade="";
+        vm.form.property="";
+        vm.form.tel="";
+
+        vm.form.id=treeNode.id;
+    }
+
+    //右键菜单删除回调功能
+    function callbackTreeDel(treeObj, treeNode){
+        vm.form.id=treeNode.id;
+        btnDelete();
+    }
+
+    function btnAdd() {
+        $.ajax({
+            url: "/sys/dw/insert", 　  //url  :请求地址 -->
+            type: 'post',　　　　　　　　//<!--type ：请求类型:post/get -->
+            data: {　　　　　　　　　　　//<!--data ：发送给服务器的数据 -->
+                "id": 0,
+                "dwName": vm.form.name,
+                "parentId": vm.form.id,
+                "dwNum": vm.form.dwnum,
+                "encode": vm.form.encode,
+                "fullname": vm.form.fullname,
+                "address": vm.form.address,
+                "tel": vm.form.tel,
+                "property": vm.form.property,
+                "dwClass": vm.form.class,
+                "fiOrder": vm.form.fi_order,
+                "grade": vm.form.grade,
+                "orgId": vm.form.org_id,
+                "empId":vm.form.emp_id,
+                "empName":vm.form.emp_name,
+                "chargeId":vm.form.charge_id,
+                "chargeName":vm.form.charge_name
+            },
+            dataType: 'json',                   // <!--dataType:服务器返回的数据类型 text/xml/script/html/json/jsonp -->
+            success: function (data) {　　//　<!--回调函数 -->
+                var treeObj = $.fn.zTree.getZTreeObj("deptTreeCommon");
+                var pnode=treeObj.getNodeByParam("id",vm.form.id);
+                var newNodes = [{id:data.data,pid:vm.form.id,name:vm.form.name}];
+                treeObj.addNodes(pnode,newNodes);
+            },
+            error: function (err) {
+                alert(err.message);
+            }
+
+        });
+
+    }
+
+    function getDwData(event, treeId, treeNode) {
+
+        $.ajax({
+            url: "/sys/dw/getDwInfo?id=" + treeNode.id, 　  // <!-- url  :请求地址 -->
+            type: 'get',　　　　　　　//　<!--type ：请求类型:post/get -->
+            data: {　　　　　　　　　　//　<!--data ：发送给服务器的数据 -->
+
+            },
+            dataType: 'json',                  //  <!--dataType:服务器返回的数据类型 text/xml/script/html/json/jsonp -->
+            success: function (data) {　　　//<!--回调函数 -->
+                if (data.data != undefined) {
+                    vm.form.name = data.data.dwName;
+                    vm.form.id = data.data.id;
+                    vm.form.parent_id = data.data.parent_id;
+                    vm.form.dwnum = data.data.dwNum;
+                    vm.form.encode = data.data.encode;
+                    vm.form.fullname = data.data.fullname;
+                    vm.form.address = data.data.address;
+                    vm.form.tel = data.data.tel;
+                    vm.form.property = data.data.property;
+                    vm.form.class = data.data.dwClass;
+                    vm.form.fi_order = data.data.fiOrder;
+                    vm.form.grade = data.data.grade;
+                    vm.form.org_id = data.data.orgId;
+                    vm.form.emp_name=data.data.empName;
+                    vm.form.charge_name=data.data.chargeName
+                }
+            },
+            error: function (err) {
+                alert(err.message);
+            }
+        });
+
+    }
+
+    function btnUpdate() {
+        $.ajax({
+            url: "/sys/dw/update", 　 // <!-- url  :请求地址 -->
+            type: 'post',　　　　　　　//　<!--type ：请求类型:post/get -->
+            data: {　　　　　　　　　　　//<!--data ：发送给服务器的数据 -->
+                "id": vm.form.id,
+                "dwName": vm.form.name,
+                "dwNum": vm.form.dwnum,
+                "encode": vm.form.encode,
+                "fullname": vm.form.fullname,
+                "address": vm.form.address,
+                "tel": vm.form.tel,
+                "property": vm.form.property,
+                "dwClass": vm.form.class,
+                "fiOrder": vm.form.fi_order,
+                "grade": vm.form.grade,
+                "orgId": vm.form.org_id,
+                "empId":vm.form.emp_id,
+                "chargeId":vm.form.charge_id,
+                "empName":vm.form.emp_name,
+                "chargeName":vm.form.charge_name
+
+            },
+            dataType: 'json',                   // <!--dataType:服务器返回的数据类型 text/xml/script/html/json/jsonp -->
+            success: function (data) {//<!--回调函数 -->
+                if(data.code==0) {
+                    var treeObj = $.fn.zTree.getZTreeObj("deptTreeCommon");
+                    var node = treeObj.getNodeByParam("id", vm.form.id, null);
+                    node.name = vm.form.name;
+                    treeObj.updateNode(node);
+                }else
+                {
+                    alert(data.errormsg);
+                }
+            },
+            error: function (err) {
+                alert(err.message);
+            }
+
+        });
+    }
+
+    //删除节点
+    function btnDelete() {
+
+        var treeObj = $.fn.zTree.getZTreeObj("deptTreeCommon");
+
+        $.ajax({
+            url: "/sys/dw/delete", 　    //<!-- url  :请求地址 -->
+            type: 'post',　　　　　　　　   // <!--type ：请求类型:post/get -->
+            data: {　　　　　　　　　　　   //  <!--data ：发送给服务器的数据 -->
+                "id": vm.form.id
+            },
+            dataType: 'json',               //<!--dataType:服务器返回的数据类型 text/xml/script/html/json/jsonp -->
+            success: function (data) {　　//　<!--回调函数 -->
+
+                if(data.code==0) {
+                    var node = treeObj.getNodeByParam("id", vm.form.id);
+                    var pnode = node.getParentNode();
+                    treeObj.removeNode(node);
+                    treeObj.refresh();
+                }else
+                {
+                    alert(data.errormsg);
+                }
+            },
+            error: function (err) {
+                alert(err.message);
+            }
+
+        });
+    }
+</script>
+</body>
+</html>

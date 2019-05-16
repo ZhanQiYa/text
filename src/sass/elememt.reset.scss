@@ -1,0 +1,57 @@
+/* elememt.css reset */
+input{
+    box-sizing: border-box;
+}
+.el-button{
+    padding: 8px 20px;
+}
+
+.el-form-item{
+    margin-bottom: 15px;
+}
+
+.el-input__inner{
+    height: 30px;
+    line-height: 30px;
+}
+
+.el-table td, .el-table th{
+    padding: 5px 0;
+}
+
+.el-table .cell{
+    text-align: center;
+}
+.el-upload__input{
+    display: none !important;
+}
+.el-upload-dragger{
+    width: 200px;
+    height: 100px;
+}
+.el-upload-dragger .el-icon-upload{
+    font-size: 40px;
+    line-height: 40px;
+    margin: 10px 0 10px;
+}
+.el-upload-dragger .el-upload__text{
+    font-size: 12px;
+    line-height: 30px;
+}
+.el-upload-list__item:first-child{
+    margin-top: 0;
+}
+.el-input__suffix{
+    width: 30px;
+    right: 0;
+    cursor: pointer;
+}
+.el-radio,.el-checkbox{
+    margin-right: 10px;
+}
+.el-icon-plus{
+    cursor: pointer;
+}
+.ui-jqgrid{
+    border-color: #e6e6e6 !important;
+}
